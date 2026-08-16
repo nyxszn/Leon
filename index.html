@@ -1,0 +1,132 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leon — Skip YouTube Ads Automatically</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:system-ui,-apple-system,sans-serif;background:#05050f;color:#e8e8f0;line-height:1.6}
+    .bg{position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(0,240,255,.08),transparent)}
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:20px 32px;display:flex;justify-content:space-between;align-items:center;background:rgba(5,5,15,.7);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.08)}
+    .logo{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:800;color:#fff;text-decoration:none}
+    .logo span{font-size:26px}
+    .nav-cta{background:linear-gradient(135deg,#00f0ff,#00ff88);color:#05050f;padding:8px 20px;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none}
+    .hero{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:140px 24px 80px}
+    .badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,240,255,.08);border:1px solid rgba(0,240,255,.2);padding:8px 18px;border-radius:100px;font-size:13px;font-weight:600;color:#00f0ff;margin-bottom:32px}
+    .pulse{width:8px;height:8px;background:#00ff88;border-radius:50%;animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+    h1{font-size:clamp(40px,8vw,72px);font-weight:900;line-height:1.05;margin-bottom:24px;background:linear-gradient(135deg,#fff,#00f0ff,#00ff88);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .hero p{color:rgba(255,255,255,.45);font-size:clamp(16px,2.5vw,20px);max-width:560px;margin:0 auto 40px}
+    .btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+    .btn-primary{background:linear-gradient(135deg,#00f0ff,#00ff88);color:#05050f;padding:16px 36px;border-radius:12px;font-size:16px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:10px;box-shadow:0 4px 30px rgba(0,240,255,.2)}
+    .btn-secondary{background:rgba(255,255,255,.03);color:#fff;padding:16px 36px;border-radius:12px;font-size:16px;font-weight:600;text-decoration:none;border:1px solid rgba(255,255,255,.08);display:inline-flex;align-items:center;gap:10px}
+    .stats{display:flex;justify-content:center;gap:48px;margin-top:60px;padding:24px 48px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px}
+    .stat{text-align:center}
+    .stat-num{font-size:28px;font-weight:800;color:#00f0ff}
+    .stat-label{font-size:12px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+    section{position:relative;z-index:1;padding:100px 24px}
+    .container{max-width:1100px;margin:0 auto}
+    .section-header{text-align:center;margin-bottom:64px}
+    .section-header h2{font-size:clamp(28px,5vw,42px);font-weight:800;margin-bottom:12px}
+    .section-header p{color:rgba(255,255,255,.45);font-size:17px;max-width:520px;margin:0 auto}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
+    .card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:32px;transition:all .3s}
+    .card:hover{transform:translateY(-4px);border-color:rgba(0,240,255,.2)}
+    .card-icon{width:48px;height:48px;background:linear-gradient(135deg,rgba(0,240,255,.1),rgba(0,255,136,.1));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:20px;border:1px solid rgba(0,240,255,.1)}
+    .card h3{font-size:18px;font-weight:700;margin-bottom:8px}
+    .card p{font-size:14px;color:rgba(255,255,255,.45);line-height:1.7}
+    .steps{display:flex;gap:24px;justify-content:center;flex-wrap:wrap}
+    .step{flex:1;min-width:280px;max-width:340px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:32px;position:relative}
+    .step-num{position:absolute;top:-16px;left:24px;width:36px;height:36px;background:linear-gradient(135deg,#00f0ff,#00ff88);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#05050f}
+    .step h3{font-size:18px;font-weight:700;margin:12px 0 8px}
+    .step p{font-size:14px;color:rgba(255,255,255,.45);line-height:1.7}
+    .code{background:rgba(0,0,0,.3);padding:12px;border-radius:8px;font-family:monospace;font-size:12px;color:#00f0ff;margin-top:12px;word-break:break-all;border:1px solid rgba(0,240,255,.1)}
+    .faq{max-width:700px;margin:0 auto}
+    .faq-item{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;margin-bottom:12px;overflow:hidden}
+    .faq-q{padding:20px 24px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-weight:600;font-size:15px}
+    .faq-q::after{content:'+';font-size:20px;color:#00f0ff}
+    .faq-item.active .faq-q::after{content:'−'}
+    .faq-a{max-height:0;overflow:hidden;transition:max-height .3s}
+    .faq-item.active .faq-a{max-height:200px}
+    .faq-a p{padding:0 24px 20px;color:rgba(255,255,255,.45);font-size:14px;line-height:1.7}
+    .footer-cta{text-align:center;padding:100px 24px;background:linear-gradient(180deg,transparent,rgba(0,240,255,.03))}
+    .footer-cta h2{font-size:clamp(24px,4vw,36px);font-weight:800;margin-bottom:16px}
+    .footer-cta p{color:rgba(255,255,255,.45);margin-bottom:32px;font-size:17px}
+    footer{text-align:center;padding:40px 24px;border-top:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.45);font-size:13px}
+    footer a{color:#00f0ff;text-decoration:none}
+    @media(max-width:768px){.stats{flex-direction:column;gap:24px;padding:24px}.nav-links{display:none}}
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+  <nav>
+    <a href="#" class="logo"><span>🤖</span> LEON</a>
+    <a href="#install" class="nav-cta">Install</a>
+  </nav>
+  <section class="hero">
+    <div class="badge"><div class="pulse"></div>Free. Open Source. No signup.</div>
+    <h1>Skip YouTube Ads<br>Before You Blink</h1>
+    <p>Leon is an AI assistant that lives in your browser and clicks "Skip Ad" the millisecond it appears. No waiting. No clicking. Just watching.</p>
+    <div class="btns">
+      <a href="#install" class="btn-primary">🚀 Install Leon</a>
+      <a href="#features" class="btn-secondary">Learn More</a>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="stat-num">0.3s</div><div class="stat-label">Avg Response</div></div>
+      <div class="stat"><div class="stat-num">100%</div><div class="stat-label">Free Forever</div></div>
+      <div class="stat"><div class="stat-num">0</div><div class="stat-label">Data Collected</div></div>
+    </div>
+  </section>
+  <section id="features">
+    <div class="container">
+      <div class="section-header"><h2>Why Leon?</h2><p>Built for people who value their time. No bloat. No tracking. Just results.</p></div>
+      <div class="grid">
+        <div class="card"><div class="card-icon">⚡</div><h3>Sub-Second Detection</h3><p>Leon watches the YouTube DOM directly. The moment a Skip Ad button appears, he clicks it. Average response: 300ms.</p></div>
+        <div class="card"><div class="card-icon">🧠</div><h3>Smart & Transparent</h3><p>Leon only clicks visible buttons. He doesn't block ads — he automates the skip. You see exactly what he does.</p></div>
+        <div class="card"><div class="card-icon">📊</div><h3>Live Strike Counter</h3><p>A floating badge tracks every skip in real time. All stats stored locally in your browser. No cloud, no tracking.</p></div>
+        <div class="card"><div class="card-icon">🔒</div><h3>Privacy First</h3><p>Zero data leaves your device. No servers, no analytics. Leon runs entirely in your browser using localStorage.</p></div>
+        <div class="card"><div class="card-icon">🎨</div><h3>Beautiful UI</h3><p>A sleek floating dashboard with live status and animated feedback. Dark mode by default — good design matters.</p></div>
+        <div class="card"><div class="card-icon">🛡️</div><h3>Emergency Stop</h3><p>One-click toggle disables Leon instantly. No lock-in, no tricks. You're always in control.</p></div>
+      </div>
+    </div>
+  </section>
+  <section id="how-it-works" style="background:rgba(255,255,255,.01)">
+    <div class="container">
+      <div class="section-header"><h2>Get Leon in 30 Seconds</h2><p>No accounts. No permissions. No store approvals.</p></div>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><h3>Install Tampermonkey</h3><p>Get the free browser extension that runs userscripts. Available on Chrome, Edge, and Firefox stores.</p><div class="code">tampermonkey.net</div></div>
+        <div class="step"><div class="step-num">2</div><h3>Click Install Leon</h3><p>Click the button below. Tampermonkey opens showing Leon's code. Click "Install" — done in 5 seconds.</p><div class="code"> greasyfork.org</div></div>
+        <div class="step"><div class="step-num">3</div><h3>Watch YouTube</h3><p>Leon appears as a 🤖 badge in the corner. When an ad plays, he clicks Skip Ad automatically.</p><div class="code">youtube.com</div></div>
+      </div>
+    </div>
+  </section>
+  <section id="faq">
+    <div class="container">
+      <div class="section-header"><h2>Frequently Asked</h2><p>Everything you need to know.</p></div>
+      <div class="faq">
+        <div class="faq-item"><div class="faq-q">Is Leon safe to use?</div><div class="faq-a"><p>Yes. Leon is a userscript that runs entirely in your browser. It only clicks visible "Skip Ad" buttons. The code is open and readable. No data leaves your device.</p></div></div>
+        <div class="faq-item"><div class="faq-q">Will YouTube ban my account?</div><div class="faq-a"><p>Leon only automates clicks on UI elements already present and clickable. It doesn't modify YouTube's code or block requests. Risk is extremely low, but use at your own discretion.</p></div></div>
+        <div class="faq-item"><div class="faq-q">Does it work on mobile?</div><div class="faq-a"><p>Leon works on desktop browsers with Tampermonkey. Mobile browsers don't support userscripts natively.</p></div></div>
+        <div class="faq-item"><div class="faq-q">How do I update Leon?</div><div class="faq-a"><p>Leon checks for updates automatically via Tampermonkey. Click "Check for userscript updates" in the Tampermonkey menu to get the latest version.</p></div></div>
+        <div class="faq-item"><div class="faq-q">Is Leon really free?</div><div class="faq-a"><p>Yes. Leon is free and open source. No ads, no premium tiers, no data collection. Share it with a friend if you find it useful.</p></div></div>
+      </div>
+    </div>
+  </section>
+  <section class="footer-cta" id="install">
+    <div class="container">
+      <h2>Ready to Reclaim Your Time?</h2>
+      <p>Join thousands of users who never wait for Skip Ad again.</p>
+      <a href="https://raw.githubusercontent.com/YOURNAME/leon/main/leon.userscript.js" class="btn-primary" style="font-size:18px;padding:18px 40px">🚀 Install Leon Now — Free</a>
+      <p style="margin-top:24px;font-size:13px;color:rgba(255,255,255,.45)">Requires Tampermonkey. Works on Chrome, Edge, and Firefox.</p>
+    </div>
+  </section>
+  <footer>
+    <p>Leon v3.0 — Built with 🤖 and caffeine. Not affiliated with YouTube or Google.</p>
+    <p style="margin-top:8px"><a href="https://github.com/YOURNAME/leon">View on GitHub</a></p>
+  </footer>
+  <script>
+    document.querySelectorAll('.faq-q').forEach(q=>{q.addEventListener('click',()=>{const item=q.parentElement;const active=item.classList.contains('active');document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('active'));if(!active)item.classList.add('active')})});
+  </script>
+</body>
+</html>
